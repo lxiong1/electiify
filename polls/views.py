@@ -6,7 +6,7 @@ from .serializers import QuestionSerializer
 from .models import Question
 
 
-class QuestionViews(APIView):
+class QuestionView(APIView):
     def post(self, request):
         serializer = QuestionSerializer(data=request.data)
         if not serializer.is_valid():

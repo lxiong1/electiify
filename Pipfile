@@ -12,6 +12,9 @@ djangorestframework = "~=3.13"
 black = "*"
 bandit = "*"
 flake8 = "*"
+pytest = "*"
+pytest-django = "*"
+pytest-describe = "*"
 
 [requires]
 python_version = "3.9"

@@ -78,10 +78,15 @@ WSGI_APPLICATION = "core.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "OPTIONS": {
-            "service": "db_service",
-            "passfile": ".pgpass",
-        },
+        "NAME": "electiify_db",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "localhost",
+        "PORT": "5432"
+        # "OPTIONS": {
+        #     "service": "db_service",
+        #     "passfile": ".pgpass",
+        # },
     }
 }
 
