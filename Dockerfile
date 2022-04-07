@@ -1,0 +1,5 @@
+FROM postgres:14.2
+
+ENV POSTGRES_DB electiify_db
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD postgres
