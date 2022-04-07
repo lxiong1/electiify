@@ -1,11 +1,7 @@
 from django.db import models
 
 
-class Session(models.Model):
-    created_at = models.DateTimeField()
-
-
-class Text(models.Model):
+class BaseText(models.Model):
     text = models.CharField(max_length=200)
 
     def __str__(self):
@@ -15,14 +11,14 @@ class Text(models.Model):
         abstract = True
 
 
-class Question(Text):
-    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+class Question(BaseText):
+    pass
 
 
-class Answer(Text):
+class Answer(BaseText):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
 
-class MultiChoiceAnswer(Text):
-    votes = models.IntegerField(default=0)
+class MultiChoiceAnswer(BaseText):
     multi_choice_question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    votes = models.IntegerField(default=0)
