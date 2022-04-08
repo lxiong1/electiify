@@ -3,6 +3,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 import polls.urls
+from polls.constants import QuestionConstants, AnswerConstants
 from polls.tests.test_factory import QuestionFactory
 
 
@@ -13,7 +14,7 @@ def describe_question_view_post_method():
     ):
         response = api_client.post(
             path=reverse(polls.urls.QUESTIONS),
-            data={"text": "What's your full name?"},
+            data={QuestionConstants.TEXT: "What's your full name?"},
             format="json",
         )
 
@@ -48,17 +49,19 @@ def describe_question_view_post_method():
     @pytest.mark.parametrize(
         "invalid_dict_value",
         [
-            123,
-            123.123,
+            {},
+            [],
+            (),
             True,
+            None,
         ],
     )
-    def test_should_return_400_status_code_when_request_payload_dict_value_not_string(
+    def test_should_return_400_status_code_when_request_payload_dict_value_not_str_or_number(
         api_client, invalid_dict_value
     ):
         response = api_client.post(
             path=reverse(polls.urls.QUESTIONS),
-            data={invalid_dict_value: "What's your full name?"},
+            data={QuestionConstants.TEXT: invalid_dict_value},
             format="json",
         )
 
@@ -127,7 +130,7 @@ def describe_question_view_patch_method():
                 polls.urls.QUESTION_ID,
                 kwargs={"question_id": question.id},
             ),
-            data={"text": "new question"},
+            data={QuestionConstants.TEXT: "new question"},
             format="json",
         )
 
@@ -143,7 +146,7 @@ def describe_question_view_patch_method():
                 polls.urls.QUESTION_ID,
                 kwargs={"question_id": non_existent_question_id},
             ),
-            data={"text": "new question"},
+            data={QuestionConstants.TEXT: "new question"},
             format="json",
         )
 
@@ -176,6 +179,41 @@ def describe_question_view_delete_method():
                 polls.urls.QUESTION_ID,
                 kwargs={"question_id": non_existent_question_id},
             ),
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def describe_answer_view_post_method():
+    def test_should_return_200_status_code_when_request_payload_serializable(
+        api_client,
+    ):
+        question = QuestionFactory.create()
+
+        response = api_client.post(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={"question_id": question.id},
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def test_should_return_404_status_code_when_question_id_does_not_exist(
+        api_client,
+    ):
+        non_existent_question_id = 1
+
+        response = api_client.post(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={"question_id": non_existent_question_id},
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
