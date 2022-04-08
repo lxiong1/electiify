@@ -42,4 +42,4 @@ class MultiChoiceAnswerFactory(factory.django.DjangoModelFactory):
 
     text = f"{faker.text()}?"
     question = factory.SubFactory(QuestionFactory)
-    votes = faker.random_int(0, 100)
+    votes = faker.random_int()

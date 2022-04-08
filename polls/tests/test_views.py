@@ -10,11 +10,13 @@ from polls.tests.test_factory import QuestionFactory, AnswerFactory
 @pytest.mark.django_db
 def describe_question_view_post_method():
     def test_should_return_201_status_code_when_request_payload_serializable(
-        api_client,
+        api_client, faker
     ):
+        question_text_to_post = f"{faker.text()}?"
+
         response = api_client.post(
             path=reverse(polls.urls.QUESTIONS),
-            data={QuestionConstants.TEXT: "What's your full name?"},
+            data={QuestionConstants.TEXT: question_text_to_post},
             format="json",
         )
 
@@ -36,11 +38,11 @@ def describe_question_view_post_method():
         ],
     )
     def test_should_return_400_status_code_when_request_payload_dict_key_not_question_property(
-        api_client, invalid_dict_key
+        api_client, invalid_dict_key, faker
     ):
         response = api_client.post(
             path=reverse(polls.urls.QUESTIONS),
-            data={invalid_dict_key: "What's your full name?"},
+            data={invalid_dict_key: f"{faker.text()}?"},
             format="json",
         )
 
@@ -93,9 +95,9 @@ def describe_question_view_get_method():
         assert response.status_code == status.HTTP_200_OK
 
     def test_should_return_404_status_code_when_request_has_non_existent_question_id(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
+        non_existent_question_id = faker.random_int()
 
         response = api_client.get(
             path=reverse(
@@ -122,32 +124,33 @@ def describe_question_view_patch_method():
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_should_return_200_status_code_when_request_payload_is_update_to_existing_question(
-        api_client,
+        api_client, faker
     ):
         question = QuestionFactory.create()
+        question_text_update = f"{faker.text()}?"
 
         response = api_client.patch(
             path=reverse(
                 polls.urls.QUESTION_ID,
                 kwargs={QuestionConstants.QUESTION_ID: question.id},
             ),
-            data={QuestionConstants.TEXT: "new question"},
+            data={QuestionConstants.TEXT: question_text_update},
             format="json",
         )
 
         assert response.status_code == status.HTTP_200_OK
 
     def test_should_return_404_status_code_when_question_does_not_exist(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
+        non_existent_question_id = faker.random_int()
 
         response = api_client.patch(
             path=reverse(
                 polls.urls.QUESTION_ID,
                 kwargs={QuestionConstants.QUESTION_ID: non_existent_question_id},
             ),
-            data={QuestionConstants.TEXT: "new question"},
+            data={QuestionConstants.TEXT: f"{faker.text()}?"},
             format="json",
         )
 
@@ -171,9 +174,9 @@ def describe_question_view_delete_method():
         assert response.status_code == status.HTTP_200_OK
 
     def test_should_return_404_status_code_when_question_does_not_exist(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
+        non_existent_question_id = faker.random_int()
 
         response = api_client.delete(
             path=reverse(
@@ -188,32 +191,33 @@ def describe_question_view_delete_method():
 @pytest.mark.django_db
 def describe_answer_view_post_method():
     def test_should_return_200_status_code_when_request_payload_serializable(
-        api_client,
+        api_client, faker
     ):
         question = QuestionFactory.create()
+        answer_text_to_post = f"{faker.text()}?"
 
         response = api_client.post(
             path=reverse(
                 polls.urls.ANSWERS,
                 kwargs={AnswerConstants.QUESTION_ID: question.id},
             ),
-            data={AnswerConstants.TEXT: "anything"},
+            data={AnswerConstants.TEXT: answer_text_to_post},
             format="json",
         )
 
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_should_return_404_status_code_when_question_id_does_not_exist(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
+        non_existent_question_id = faker.random_int()
 
         response = api_client.post(
             path=reverse(
                 polls.urls.ANSWERS,
                 kwargs={AnswerConstants.QUESTION_ID: non_existent_question_id},
             ),
-            data={AnswerConstants.TEXT: "anything"},
+            data={AnswerConstants.TEXT: f"{faker.text()}?"},
             format="json",
         )
 
@@ -235,16 +239,14 @@ def describe_answer_view_get_method():
                     AnswerConstants.QUESTION_ID: question.id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
-            format="json",
         )
 
         assert response.status_code == status.HTTP_200_OK
 
     def test_should_return_404_status_code_when_request_has_only_non_existent_question_id(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
+        non_existent_question_id = faker.random_int()
 
         response = api_client.get(
             path=reverse(
@@ -253,8 +255,6 @@ def describe_answer_view_get_method():
                     AnswerConstants.QUESTION_ID: non_existent_question_id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
-            format="json",
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -273,17 +273,15 @@ def describe_answer_view_get_method():
                     AnswerConstants.ANSWER_ID: answer.id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
-            format="json",
         )
 
         assert response.status_code == status.HTTP_200_OK
 
     def test_should_return_404_status_code_when_request_has_both_non_existent_question_id_and_answer_id(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
-        non_existent_answer_id = 1
+        non_existent_question_id = faker.random_int()
+        non_existent_answer_id = faker.random_int()
 
         response = api_client.get(
             path=reverse(
@@ -293,17 +291,15 @@ def describe_answer_view_get_method():
                     AnswerConstants.ANSWER_ID: non_existent_answer_id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
-            format="json",
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_should_return_404_status_code_when_request_has_non_existent_question_id_and_answer_id(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
-        any_answer_id = 1
+        non_existent_question_id = faker.random_int()
+        any_answer_id = faker.random_int()
 
         response = api_client.get(
             path=reverse(
@@ -313,17 +309,15 @@ def describe_answer_view_get_method():
                     AnswerConstants.ANSWER_ID: any_answer_id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
-            format="json",
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_should_return_404_status_code_when_request_has_question_id_non_existent_answer_id(
-        api_client,
+        api_client, faker
     ):
-        any_question_id = 1
-        non_existent_answer_id = 1
+        any_question_id = faker.random_int()
+        non_existent_answer_id = faker.random_int()
 
         response = api_client.get(
             path=reverse(
@@ -333,8 +327,6 @@ def describe_answer_view_get_method():
                     AnswerConstants.ANSWER_ID: non_existent_answer_id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
-            format="json",
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -343,10 +335,10 @@ def describe_answer_view_get_method():
 @pytest.mark.django_db
 def describe_answer_view_patch_method():
     def test_should_return_204_status_code_when_request_payload_is_empty(
-        api_client,
+        api_client, faker
     ):
-        any_question_id = 1
-        any_answer_id = 1
+        any_question_id = faker.random_int()
+        any_answer_id = faker.random_int()
 
         response = api_client.patch(
             path=reverse(
@@ -363,10 +355,11 @@ def describe_answer_view_patch_method():
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
     def test_should_return_200_status_code_when_request_payload_is_update_to_existing_answer(
-        api_client,
+        api_client, faker
     ):
         question = QuestionFactory.create()
         answer = AnswerFactory.create()
+        answer_text_update = f"{faker.text()}?"
 
         response = api_client.patch(
             path=reverse(
@@ -376,17 +369,17 @@ def describe_answer_view_patch_method():
                     AnswerConstants.ANSWER_ID: answer.id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
+            data={AnswerConstants.TEXT: answer_text_update},
             format="json",
         )
 
         assert response.status_code == status.HTTP_200_OK
 
     def test_should_return_404_status_code_when_answer_does_not_exist(
-        api_client,
+        api_client, faker
     ):
-        non_existent_question_id = 1
-        non_existent_answer_id = 1
+        non_existent_question_id = faker.random_int()
+        non_existent_answer_id = faker.random_int()
 
         response = api_client.patch(
             path=reverse(
@@ -396,7 +389,7 @@ def describe_answer_view_patch_method():
                     AnswerConstants.ANSWER_ID: non_existent_answer_id,
                 },
             ),
-            data={AnswerConstants.TEXT: "anything"},
+            data={AnswerConstants.TEXT: f"{faker.text()}?"},
             format="json",
         )
 
