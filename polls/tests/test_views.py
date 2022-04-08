@@ -361,3 +361,43 @@ def describe_answer_view_patch_method():
         )
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_should_return_200_status_code_when_request_payload_is_update_to_existing_answer(
+        api_client,
+    ):
+        question = QuestionFactory.create()
+        answer = AnswerFactory.create()
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.ANSWER_ID,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: question.id,
+                    AnswerConstants.ANSWER_ID: answer.id,
+                },
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_404_status_code_when_answer_does_not_exist(
+        api_client,
+    ):
+        non_existent_question_id = 1
+        non_existent_answer_id = 1
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.ANSWER_ID,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: non_existent_question_id,
+                    AnswerConstants.ANSWER_ID: non_existent_answer_id,
+                },
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
