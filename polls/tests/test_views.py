@@ -3,7 +3,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 import polls.urls
-from polls.models import Question
 from polls.tests.test_factory import QuestionFactory
 
 

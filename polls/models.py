@@ -20,5 +20,5 @@ class Answer(BaseText):
 
 
 class MultiChoiceAnswer(BaseText):
-    multi_choice_question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
     votes = models.IntegerField(default=0)
