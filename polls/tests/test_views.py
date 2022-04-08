@@ -4,7 +4,7 @@ from rest_framework.reverse import reverse
 
 import polls.urls
 from polls.constants import QuestionConstants, AnswerConstants
-from polls.tests.test_factory import QuestionFactory
+from polls.tests.test_factory import QuestionFactory, AnswerFactory
 
 
 @pytest.mark.django_db
@@ -85,7 +85,7 @@ def describe_question_view_get_method():
         response = api_client.get(
             path=reverse(
                 polls.urls.QUESTION_ID,
-                kwargs={"question_id": question.id},
+                kwargs={QuestionConstants.QUESTION_ID: question.id},
             ),
             format="json",
         )
@@ -99,7 +99,8 @@ def describe_question_view_get_method():
 
         response = api_client.get(
             path=reverse(
-                polls.urls.QUESTION_ID, kwargs={"question_id": non_existent_question_id}
+                polls.urls.QUESTION_ID,
+                kwargs={QuestionConstants.QUESTION_ID: non_existent_question_id},
             ),
             format="json",
         )
@@ -128,7 +129,7 @@ def describe_question_view_patch_method():
         response = api_client.patch(
             path=reverse(
                 polls.urls.QUESTION_ID,
-                kwargs={"question_id": question.id},
+                kwargs={QuestionConstants.QUESTION_ID: question.id},
             ),
             data={QuestionConstants.TEXT: "new question"},
             format="json",
@@ -144,7 +145,7 @@ def describe_question_view_patch_method():
         response = api_client.patch(
             path=reverse(
                 polls.urls.QUESTION_ID,
-                kwargs={"question_id": non_existent_question_id},
+                kwargs={QuestionConstants.QUESTION_ID: non_existent_question_id},
             ),
             data={QuestionConstants.TEXT: "new question"},
             format="json",
@@ -163,7 +164,7 @@ def describe_question_view_delete_method():
         response = api_client.delete(
             path=reverse(
                 polls.urls.QUESTION_ID,
-                kwargs={"question_id": question.id},
+                kwargs={QuestionConstants.QUESTION_ID: question.id},
             ),
         )
 
@@ -177,7 +178,7 @@ def describe_question_view_delete_method():
         response = api_client.delete(
             path=reverse(
                 polls.urls.QUESTION_ID,
-                kwargs={"question_id": non_existent_question_id},
+                kwargs={QuestionConstants.QUESTION_ID: non_existent_question_id},
             ),
         )
 
@@ -194,7 +195,7 @@ def describe_answer_view_post_method():
         response = api_client.post(
             path=reverse(
                 polls.urls.ANSWERS,
-                kwargs={"question_id": question.id},
+                kwargs={AnswerConstants.QUESTION_ID: question.id},
             ),
             data={AnswerConstants.TEXT: "anything"},
             format="json",
@@ -210,7 +211,85 @@ def describe_answer_view_post_method():
         response = api_client.post(
             path=reverse(
                 polls.urls.ANSWERS,
-                kwargs={"question_id": non_existent_question_id},
+                kwargs={AnswerConstants.QUESTION_ID: non_existent_question_id},
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def describe_answer_view_get_method():
+    def test_should_return_200_status_code_when_request_has_question_id_but_no_answer_id(
+        api_client,
+    ):
+        AnswerFactory.create()
+        question = QuestionFactory.create()
+
+        response = api_client.get(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={AnswerConstants.QUESTION_ID: question.id},
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_200_status_code_when_request_has_question_id_and_answer_id(
+        api_client,
+    ):
+        question = QuestionFactory.create()
+        answer = AnswerFactory.create()
+
+        response = api_client.get(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: question.id,
+                    AnswerConstants.ANSWER_ID: answer.id,
+                },
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_404_status_code_when_request_has_both_non_existent_question_id_and_answer_id(
+        api_client,
+    ):
+        non_existent_question_id = 1
+        non_existent_answer_id = 1
+
+        response = api_client.get(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: non_existent_question_id,
+                    AnswerConstants.ANSWER_ID: non_existent_answer_id,
+                },
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_should_return_404_status_code_when_request_has_non_existent_question_id_and_no_answer_id(
+        api_client,
+    ):
+        non_existent_question_id = 1
+
+        response = api_client.get(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: non_existent_question_id,
+                },
             ),
             data={AnswerConstants.TEXT: "anything"},
             format="json",
