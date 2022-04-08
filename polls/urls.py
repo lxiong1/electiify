@@ -1,16 +1,14 @@
-from django.urls import path
+from rest_framework.urls import path
 from .views import QuestionView
 
-POLLS = "polls"
 QUESTIONS = "questions"
-QUESTION_BY_ID = "question_by_id"
-QUESTIONS_PATH = f"{POLLS}/{QUESTIONS}"
+QUESTION_ID = "question_id"
 
 urlpatterns = [
-    path(QUESTIONS_PATH, QuestionView.as_view(), name=QUESTIONS),
+    path(QUESTIONS, QuestionView.as_view(), name=QUESTIONS),
     path(
-        f"{QUESTIONS_PATH}/<int:question_id>",
+        f"{QUESTIONS}/<int:{QUESTION_ID}>",
         QuestionView.as_view(),
-        name=QUESTION_BY_ID,
+        name=QUESTION_ID,
     ),
 ]

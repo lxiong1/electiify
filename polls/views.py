@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.generics import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -24,7 +25,7 @@ class QuestionView(APIView):
 
     def get(self, request, question_id=None):
         if question_id:
-            question = Question.objects.get(id=question_id)
+            question = get_object_or_404(Question, id=question_id)
             serializer = QuestionSerializer(question)
 
             return Response(
