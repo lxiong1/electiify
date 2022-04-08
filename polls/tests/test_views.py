@@ -77,7 +77,7 @@ def describe_question_view_get_method():
 
         assert response.status_code == status.HTTP_200_OK
 
-    def test_should_return_200_status_code_when_request_has_specified_question_id(
+    def test_should_return_200_status_code_when_request_has_question_id(
         api_client,
     ):
         question = QuestionFactory.create()
@@ -92,7 +92,7 @@ def describe_question_view_get_method():
 
         assert response.status_code == status.HTTP_200_OK
 
-    def test_should_return_404_status_code_when_request_has_specified_question_id_that_does_not_exist(
+    def test_should_return_404_status_code_when_request_has_non_existent_question_id(
         api_client,
     ):
         non_existent_question_id = 1
@@ -222,16 +222,18 @@ def describe_answer_view_post_method():
 
 @pytest.mark.django_db
 def describe_answer_view_get_method():
-    def test_should_return_200_status_code_when_request_has_question_id_but_no_answer_id(
+    def test_should_return_200_status_code_when_request_has_only_question_id(
         api_client,
     ):
-        AnswerFactory.create()
         question = QuestionFactory.create()
+        AnswerFactory.create()
 
         response = api_client.get(
             path=reverse(
                 polls.urls.ANSWERS,
-                kwargs={AnswerConstants.QUESTION_ID: question.id},
+                kwargs={
+                    AnswerConstants.QUESTION_ID: question.id,
+                },
             ),
             data={AnswerConstants.TEXT: "anything"},
             format="json",
@@ -239,7 +241,25 @@ def describe_answer_view_get_method():
 
         assert response.status_code == status.HTTP_200_OK
 
-    def test_should_return_200_status_code_when_request_has_question_id_and_answer_id(
+    def test_should_return_404_status_code_when_request_has_only_non_existent_question_id(
+        api_client,
+    ):
+        non_existent_question_id = 1
+
+        response = api_client.get(
+            path=reverse(
+                polls.urls.ANSWERS,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: non_existent_question_id,
+                },
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_should_return_200_status_code_when_request_has_both_question_id_and_answer_id(
         api_client,
     ):
         question = QuestionFactory.create()
@@ -247,7 +267,7 @@ def describe_answer_view_get_method():
 
         response = api_client.get(
             path=reverse(
-                polls.urls.ANSWERS,
+                polls.urls.ANSWER_ID,
                 kwargs={
                     AnswerConstants.QUESTION_ID: question.id,
                     AnswerConstants.ANSWER_ID: answer.id,
@@ -267,7 +287,7 @@ def describe_answer_view_get_method():
 
         response = api_client.get(
             path=reverse(
-                polls.urls.ANSWERS,
+                polls.urls.ANSWER_ID,
                 kwargs={
                     AnswerConstants.QUESTION_ID: non_existent_question_id,
                     AnswerConstants.ANSWER_ID: non_existent_answer_id,
@@ -279,16 +299,18 @@ def describe_answer_view_get_method():
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_should_return_404_status_code_when_request_has_non_existent_question_id_and_no_answer_id(
+    def test_should_return_404_status_code_when_request_has_non_existent_question_id_and_answer_id(
         api_client,
     ):
         non_existent_question_id = 1
+        any_answer_id = 1
 
         response = api_client.get(
             path=reverse(
-                polls.urls.ANSWERS,
+                polls.urls.ANSWER_ID,
                 kwargs={
                     AnswerConstants.QUESTION_ID: non_existent_question_id,
+                    AnswerConstants.ANSWER_ID: any_answer_id,
                 },
             ),
             data={AnswerConstants.TEXT: "anything"},
@@ -296,3 +318,46 @@ def describe_answer_view_get_method():
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_should_return_404_status_code_when_request_has_question_id_non_existent_answer_id(
+        api_client,
+    ):
+        any_question_id = 1
+        non_existent_answer_id = 1
+
+        response = api_client.get(
+            path=reverse(
+                polls.urls.ANSWER_ID,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: any_question_id,
+                    AnswerConstants.ANSWER_ID: non_existent_answer_id,
+                },
+            ),
+            data={AnswerConstants.TEXT: "anything"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def describe_answer_view_patch_method():
+    def test_should_return_204_status_code_when_request_payload_is_empty(
+        api_client,
+    ):
+        any_question_id = 1
+        any_answer_id = 1
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.ANSWER_ID,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: any_question_id,
+                    AnswerConstants.ANSWER_ID: any_answer_id,
+                },
+            ),
+            data={},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT

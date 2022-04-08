@@ -20,5 +20,5 @@ urlpatterns = [
         name=QUESTION_ID,
     ),
     path(ANSWERS_PATH, AnswerView.as_view(), name=ANSWERS),
-    path(ANSWERS_ID_PATH, AnswerView.as_view(), name=ANSWERS),
+    path(ANSWERS_ID_PATH, AnswerView.as_view(), name=ANSWER_ID),
 ]

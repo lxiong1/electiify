@@ -110,3 +110,26 @@ class AnswerView(APIView):
             data={"status": "success", "data": serializer.data},
             status=status.HTTP_200_OK,
         )
+
+    def patch(self, request, question_id=None, answer_id=None):
+        if not request.data:
+            return Response(
+                {"status": "success", "data": {}},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+        answer = get_object_or_404(Answer, id=answer_id, question_id=question_id)
+        serializer = AnswerSerializer(answer, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                {"status": "success", "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+
+        return Response(
+            {"status": "success", "data": {}},
+            status=status.HTTP_204_NO_CONTENT,
+        )
