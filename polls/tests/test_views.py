@@ -148,3 +148,34 @@ def describe_question_view_patch_method():
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def describe_question_view_delete_method():
+    def test_should_return_200_status_code_when_request_payload_is_update_to_existing_question(
+        api_client,
+    ):
+        question = QuestionFactory.create()
+
+        response = api_client.delete(
+            path=reverse(
+                polls.urls.QUESTION_ID,
+                kwargs={"question_id": question.id},
+            ),
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_404_status_code_when_question_does_not_exist(
+        api_client,
+    ):
+        non_existent_question_id = 1
+
+        response = api_client.delete(
+            path=reverse(
+                polls.urls.QUESTION_ID,
+                kwargs={"question_id": non_existent_question_id},
+            ),
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND

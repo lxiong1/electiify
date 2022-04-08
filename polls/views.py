@@ -67,4 +67,7 @@ class QuestionView(APIView):
         question = get_object_or_404(Question, id=question_id)
         question.delete()
 
-        return Response({"status": "success", "data": f"Question '{question}' deleted"})
+        return Response(
+            {"status": "success", "data": f"Question '{question}' deleted"},
+            status=status.HTTP_200_OK,
+        )
