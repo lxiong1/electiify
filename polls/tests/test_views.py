@@ -80,7 +80,11 @@ def describe_question_view_get_method():
         question = QuestionFactory.create()
 
         response = api_client.get(
-            path=reverse(polls.urls.QUESTION_ID, kwargs={"question_id": question.id})
+            path=reverse(
+                polls.urls.QUESTION_ID,
+                kwargs={"question_id": question.id},
+            ),
+            format="json",
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -93,7 +97,54 @@ def describe_question_view_get_method():
         response = api_client.get(
             path=reverse(
                 polls.urls.QUESTION_ID, kwargs={"question_id": non_existent_question_id}
-            )
+            ),
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def describe_question_view_patch_method():
+    def test_should_return_204_status_code_when_request_payload_is_empty(
+        api_client,
+    ):
+        response = api_client.patch(
+            path=reverse(polls.urls.QUESTIONS),
+            data={},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_should_return_200_status_code_when_request_payload_is_update_to_existing_question(
+        api_client,
+    ):
+        question = QuestionFactory.create()
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.QUESTION_ID,
+                kwargs={"question_id": question.id},
+            ),
+            data={"text": "new question"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_404_status_code_when_question_does_not_exist(
+        api_client,
+    ):
+        non_existent_question_id = 1
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.QUESTION_ID,
+                kwargs={"question_id": non_existent_question_id},
+            ),
+            data={"text": "new question"},
+            format="json",
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND

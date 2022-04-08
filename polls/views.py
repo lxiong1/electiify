@@ -47,20 +47,20 @@ class QuestionView(APIView):
                 status=status.HTTP_204_NO_CONTENT,
             )
 
-        question = Question.objects.get(id=question_id)
+        question = get_object_or_404(Question, id=question_id)
         serializer = QuestionSerializer(question, data=request.data, partial=True)
 
-        if not serializer.is_valid():
+        if serializer.is_valid():
+            serializer.save()
+
             return Response(
-                {"status": "error", "data": serializer.errors},
-                status=status.HTTP_400_BAD_REQUEST,
+                {"status": "success", "data": serializer.data},
+                status=status.HTTP_200_OK,
             )
 
-        serializer.save()
-
         return Response(
-            {"status": "success", "data": serializer.data},
-            status=status.HTTP_200_OK,
+            {"status": "success", "data": {}},
+            status=status.HTTP_204_NO_CONTENT,
         )
 
     def delete(self, request, question_id=None):
