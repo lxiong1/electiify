@@ -46,6 +46,12 @@ Run the following command to test:
 pytest
 ```
 
+Run the following command to view test coverage:
+
+```commandline
+pytest --cov=polls --cov-report=term
+```
+
 ### Static Analysis
 
 Run the following command to auto-format code:
