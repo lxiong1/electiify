@@ -179,3 +179,12 @@ class ChoiceView(APIView):
             data={"status": "success", "data": serializer.data},
             status=status.HTTP_200_OK,
         )
+
+    def delete(self, request, question_id=None, choice_id=None):
+        answer = get_object_or_404(Choice, id=choice_id, question_id=question_id)
+        answer.delete()
+
+        return Response(
+            {"status": "success", "data": f"Answer '{answer}' deleted"},
+            status=status.HTTP_200_OK,
+        )
