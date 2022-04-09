@@ -1,6 +1,6 @@
 # Electiify
 
-A voting web application.
+A voting web API.
 
 ## Pre-requisites
 

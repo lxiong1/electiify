@@ -15,6 +15,6 @@ class AnswerConstants(QuestionConstants):
     QUESTION = "question"
 
 
-class MultiChoiceAnswerConstants(QuestionConstants):
+class ChoiceConstants(QuestionConstants):
     QUESTION = "question"
     VOTES = "votes"

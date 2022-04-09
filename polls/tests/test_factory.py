@@ -4,9 +4,9 @@ from faker import Faker
 from polls.constants import (
     QuestionConstants,
     AnswerConstants,
-    MultiChoiceAnswerConstants,
+    ChoiceConstants,
 )
-from polls.models import Question, Answer, MultiChoiceAnswer
+from polls.models import Question, Answer, Choice
 
 faker = Faker()
 
@@ -33,11 +33,11 @@ class AnswerFactory(factory.django.DjangoModelFactory):
 
 class MultiChoiceAnswerFactory(factory.django.DjangoModelFactory):
     class Meta:
-        model = MultiChoiceAnswer
+        model = Choice
         django_get_or_create = (
-            MultiChoiceAnswerConstants.TEXT,
-            MultiChoiceAnswerConstants.QUESTION,
-            MultiChoiceAnswerConstants.VOTES,
+            ChoiceConstants.TEXT,
+            ChoiceConstants.QUESTION,
+            ChoiceConstants.VOTES,
         )
 
     text = f"{faker.text()}?"

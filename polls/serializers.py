@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
-from .constants import AnswerConstants, MultiChoiceAnswerConstants
-from .models import Question, Answer, MultiChoiceAnswer
+from .constants import AnswerConstants, ChoiceConstants
+from .models import Question, Answer, Choice
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -21,16 +21,16 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = [AnswerConstants.ID, AnswerConstants.QUESTION_ID, AnswerConstants.TEXT]
 
 
-class MultiChoiceAnswerSerializer(serializers.ModelSerializer):
+class ChoiceSerializer(serializers.ModelSerializer):
     question_id = serializers.IntegerField(required=True)
     text = serializers.CharField(max_length=200)
     votes = serializers.IntegerField(required=False, default=0)
 
     class Meta:
-        model = MultiChoiceAnswer
+        model = Choice
         fields = [
-            MultiChoiceAnswerConstants.ID,
-            MultiChoiceAnswerConstants.QUESTION_ID,
-            MultiChoiceAnswerConstants.TEXT,
-            MultiChoiceAnswerConstants.VOTES,
+            ChoiceConstants.ID,
+            ChoiceConstants.QUESTION_ID,
+            ChoiceConstants.TEXT,
+            ChoiceConstants.VOTES,
         ]
