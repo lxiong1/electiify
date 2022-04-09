@@ -18,6 +18,7 @@ pytest-describe = "*"
 factory-boy = "*"
 Faker = "*"
 pytest-cov = "*"
+docker = "*"
 
 [requires]
 python_version = "3.9"
