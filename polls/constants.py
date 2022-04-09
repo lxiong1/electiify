@@ -16,5 +16,6 @@ class AnswerConstants(QuestionConstants):
 
 
 class ChoiceConstants(QuestionConstants):
+    CHOICE_ID = "choice_id"
     QUESTION = "question"
     VOTES = "votes"

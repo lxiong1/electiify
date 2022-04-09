@@ -3,9 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from .constants import AnswerConstants
-from .serializers import QuestionSerializer, AnswerSerializer
-from .models import Question, Answer
+from .constants import AnswerConstants, ChoiceConstants
+from .serializers import QuestionSerializer, AnswerSerializer, ChoiceSerializer
+from .models import Question, Answer, Choice
 
 
 class QuestionView(APIView):
@@ -88,7 +88,7 @@ class AnswerView(APIView):
         )
 
     def get(self, request, question_id=None, answer_id=None):
-        if answer_id and question_id:
+        if question_id and answer_id:
             answer = get_object_or_404(Answer, id=answer_id, question_id=question_id)
             serializer = AnswerSerializer(answer)
 
@@ -140,5 +140,42 @@ class AnswerView(APIView):
 
         return Response(
             {"status": "success", "data": f"Answer '{answer}' deleted"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ChoiceView(APIView):
+    def post(self, request, question_id=None):
+        question = get_object_or_404(Question, id=question_id)
+        choice_text = request.data.get(ChoiceConstants.TEXT)
+        choice = question.choice_set.create(text=choice_text)
+        serializer = ChoiceSerializer(choice)
+
+        return Response(
+            data={"status": "success", "data": serializer.data},
+            status=status.HTTP_201_CREATED,
+        )
+
+    def get(self, request, question_id=None, choice_id=None):
+        if question_id and choice_id:
+            choice = get_object_or_404(Choice, id=choice_id, question_id=question_id)
+            serializer = ChoiceSerializer(choice)
+
+            return Response(
+                data={"status": "success", "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
+
+        choices = Choice.objects.filter(question_id=question_id)
+        if not choices:
+            return Response(
+                data={"status": "error", "data": []},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        serializer = ChoiceSerializer(choices, many=True)
+
+        return Response(
+            data={"status": "success", "data": serializer.data},
             status=status.HTTP_200_OK,
         )

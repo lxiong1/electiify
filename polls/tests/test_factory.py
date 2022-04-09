@@ -31,7 +31,7 @@ class AnswerFactory(factory.django.DjangoModelFactory):
     question = factory.SubFactory(QuestionFactory)
 
 
-class MultiChoiceAnswerFactory(factory.django.DjangoModelFactory):
+class ChoiceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Choice
         django_get_or_create = (

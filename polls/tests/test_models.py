@@ -3,7 +3,7 @@ import pytest
 from polls.tests.test_factory import (
     QuestionFactory,
     AnswerFactory,
-    MultiChoiceAnswerFactory,
+    ChoiceFactory,
 )
 
 
@@ -20,6 +20,6 @@ def describe_base_text_model_str_method():
         assert str(answer) == answer.text
 
     def test_should_allow_multi_choice_answer_model_to_stringify_using_text_property():
-        multi_choice_answer = MultiChoiceAnswerFactory.create()
+        multi_choice_answer = ChoiceFactory.create()
 
         assert str(multi_choice_answer) == multi_choice_answer.text
