@@ -175,3 +175,42 @@ def describe_answer_view_patch_method():
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
+def describe_answer_view_delete_method():
+    def test_should_return_200_status_code_when_answer_deleted(
+        api_client,
+    ):
+        question = QuestionFactory.create()
+        answer = AnswerFactory.create()
+
+        response = api_client.delete(
+            path=reverse(
+                polls.urls.ANSWER_ID,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: question.id,
+                    AnswerConstants.ANSWER_ID: answer.id,
+                },
+            ),
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_404_status_code_when_answer_not_found_by_question_id(
+        api_client, faker
+    ):
+        non_existent_question_id = faker.random_int()
+        non_existent_answer_id = faker.random_int()
+
+        response = api_client.delete(
+            path=reverse(
+                polls.urls.ANSWER_ID,
+                kwargs={
+                    AnswerConstants.QUESTION_ID: non_existent_question_id,
+                    AnswerConstants.ANSWER_ID: non_existent_answer_id,
+                },
+            ),
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND

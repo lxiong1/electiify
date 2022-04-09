@@ -133,3 +133,12 @@ class AnswerView(APIView):
             {"status": "success", "data": {}},
             status=status.HTTP_204_NO_CONTENT,
         )
+
+    def delete(self, request, question_id=None, answer_id=None):
+        answer = get_object_or_404(Answer, id=answer_id, question_id=question_id)
+        answer.delete()
+
+        return Response(
+            {"status": "success", "data": f"Answer '{answer}' deleted"},
+            status=status.HTTP_200_OK,
+        )
