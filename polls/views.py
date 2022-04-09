@@ -180,11 +180,34 @@ class ChoiceView(APIView):
             status=status.HTTP_200_OK,
         )
 
-    def delete(self, request, question_id=None, choice_id=None):
-        answer = get_object_or_404(Choice, id=choice_id, question_id=question_id)
-        answer.delete()
+    def patch(self, request, question_id=None, choice_id=None):
+        if not request.data:
+            return Response(
+                {"status": "success", "data": {}},
+                status=status.HTTP_204_NO_CONTENT,
+            )
+
+        choice = get_object_or_404(Choice, id=choice_id, question_id=question_id)
+        serializer = ChoiceSerializer(choice, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                {"status": "success", "data": serializer.data},
+                status=status.HTTP_200_OK,
+            )
 
         return Response(
-            {"status": "success", "data": f"Answer '{answer}' deleted"},
+            {"status": "success", "data": {}},
+            status=status.HTTP_204_NO_CONTENT,
+        )
+
+    def delete(self, request, question_id=None, choice_id=None):
+        choice = get_object_or_404(Choice, id=choice_id, question_id=question_id)
+        choice.delete()
+
+        return Response(
+            {"status": "success", "data": f"Choice '{choice}' deleted"},
             status=status.HTTP_200_OK,
         )

@@ -116,6 +116,72 @@ def describe_choice_view_get_method():
 
 
 @pytest.mark.django_db
+def describe_choice_view_patch_method():
+    def test_should_return_204_status_code_when_request_payload_is_empty(
+        api_client, faker
+    ):
+        any_question_id = faker.random_int()
+        any_choice_id = faker.random_int()
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.CHOICE_ID,
+                kwargs={
+                    ChoiceConstants.QUESTION_ID: any_question_id,
+                    ChoiceConstants.CHOICE_ID: any_choice_id,
+                },
+            ),
+            data={},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+
+    def test_should_return_200_status_code_when_choice_updated(api_client, faker):
+        question = QuestionFactory.create()
+        choice = ChoiceFactory.create()
+        choice_text_update = f"{faker.text()}?"
+        choice_votes_update = faker.random_int()
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.CHOICE_ID,
+                kwargs={
+                    ChoiceConstants.QUESTION_ID: question.id,
+                    ChoiceConstants.CHOICE_ID: choice.id,
+                },
+            ),
+            data={
+                ChoiceConstants.TEXT: choice_text_update,
+                ChoiceConstants.VOTES: choice_votes_update,
+            },
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_should_return_404_status_code_when_choice_not_found_by_question_and_choice_id(
+        api_client, faker
+    ):
+        non_existent_question_id = faker.random_int()
+        non_existent_choice_id = faker.random_int()
+
+        response = api_client.patch(
+            path=reverse(
+                polls.urls.CHOICE_ID,
+                kwargs={
+                    ChoiceConstants.QUESTION_ID: non_existent_question_id,
+                    ChoiceConstants.CHOICE_ID: non_existent_choice_id,
+                },
+            ),
+            data={ChoiceConstants.TEXT: f"{faker.text()}?"},
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.django_db
 def describe_choice_view_delete_method():
     def test_should_return_200_status_code_when_choice_deleted(
         api_client,
