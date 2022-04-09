@@ -1,12 +1,14 @@
 from rest_framework.urls import path
+
+from .constants import QuestionConstants, AnswerConstants, ChoiceConstants
 from .views import QuestionView, AnswerView, ChoiceView
 
 QUESTIONS = "questions"
-QUESTION_ID = "question_id"
+QUESTION_ID = QuestionConstants.QUESTION_ID
 ANSWERS = "answers"
-ANSWER_ID = "answer_id"
+ANSWER_ID = AnswerConstants.ANSWER_ID
 CHOICES = "choices"
-CHOICE_ID = "choice_id"
+CHOICE_ID = ChoiceConstants.CHOICE_ID
 
 QUESTIONS_PATH = f"{QUESTIONS}/"
 QUESTION_ID_PATH = f"{QUESTIONS_PATH}<int:{QUESTION_ID}>/"
